@@ -36,7 +36,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-// 1. Data model for our tracks
+// Data model for our tracks
 data class Track(
     val id: Int,
     val title: String,
@@ -58,7 +58,7 @@ val trackList = listOf(
 fun AppNavigation() {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "welcome") {
-        // Screen 1: Welcome (User Input)
+        // Screen 1: Welcome (User Input & Navigation)
         composable("welcome") { WelcomeScreen(navController) }
         
         // Screen 2: Library (Scrolling List / LazyColumn)
@@ -81,7 +81,6 @@ fun AppNavigation() {
 @Composable
 fun WelcomeScreen(navController: NavController) {
     var name by remember { mutableStateOf("") }
-    
     Scaffold { innerPadding ->
         Column(
             modifier = Modifier
@@ -93,7 +92,6 @@ fun WelcomeScreen(navController: NavController) {
         ) {
             Text("Mood Radio", style = MaterialTheme.typography.displayMedium)
             Spacer(modifier = Modifier.height(32.dp))
-            
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
@@ -101,9 +99,7 @@ fun WelcomeScreen(navController: NavController) {
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
-            
             Spacer(modifier = Modifier.height(16.dp))
-            
             Button(
                 onClick = { if (name.isNotBlank()) navController.navigate("library/$name") },
                 modifier = Modifier.fillMaxWidth(),
@@ -118,12 +114,11 @@ fun WelcomeScreen(navController: NavController) {
 @Composable
 fun LibraryScreen(navController: NavController, userName: String) {
     val context = LocalContext.current
-    
     Scaffold(
         topBar = {
             Column(modifier = Modifier.statusBarsPadding().padding(16.dp)) {
-                Text("Hello, $userName!", style = MaterialTheme.typography.headlineSmall)
-                Text("Select a track to play", style = MaterialTheme.typography.bodyMedium)
+                Text("Welcome, $userName!", style = MaterialTheme.typography.headlineSmall)
+                Text("Pick a track to play", style = MaterialTheme.typography.bodyMedium)
             }
         }
     ) { innerPadding ->
@@ -138,6 +133,7 @@ fun LibraryScreen(navController: NavController, userName: String) {
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 8.dp)
                         .clickable {
+                            // Toast message implementation
                             Toast.makeText(context, "Loading ${track.title}...", Toast.LENGTH_SHORT).show()
                             navController.navigate("player/${track.id}")
                         }
@@ -169,7 +165,7 @@ fun PlayerScreen(navController: NavController, track: Track) {
     val mediaPlayer = remember { MediaPlayer() }
     var isPlaying by remember { mutableStateOf(false) }
 
-    // Media Player lifecycle management
+    // MediaPlayer lifecycle management
     DisposableEffect(track.audioUrl) {
         mediaPlayer.apply {
             setDataSource(track.audioUrl)
@@ -199,30 +195,20 @@ fun PlayerScreen(navController: NavController, track: Track) {
                 modifier = Modifier.size(280.dp),
                 contentScale = ContentScale.Crop
             )
-            
             Spacer(modifier = Modifier.height(24.dp))
-            
             Text(track.title, style = MaterialTheme.typography.headlineMedium)
             Text(track.artist, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.secondary)
-            
             Spacer(modifier = Modifier.height(48.dp))
-            
             Button(
                 onClick = {
-                    if (isPlaying) {
-                        mediaPlayer.pause()
-                    } else {
-                        mediaPlayer.start()
-                    }
+                    if (isPlaying) mediaPlayer.pause() else mediaPlayer.start()
                     isPlaying = !isPlaying
                 },
                 modifier = Modifier.width(150.dp)
             ) {
                 Text(if (isPlaying) "Pause" else "Play")
             }
-            
             Spacer(modifier = Modifier.height(16.dp))
-
             TextButton(onClick = { navController.popBackStack() }) {
                 Text("Back to Library")
             }
