@@ -58,7 +58,7 @@ val trackList = listOf(
 fun AppNavigation() {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "welcome") {
-        // Screen 1: Welcome (User Input & Navigation)
+        // Screen 1: Welcome (User Input)
         composable("welcome") { WelcomeScreen(navController) }
         
         // Screen 2: Library (Scrolling List / LazyColumn)
@@ -138,7 +138,6 @@ fun LibraryScreen(navController: NavController, userName: String) {
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 8.dp)
                         .clickable {
-                            // Toast Implementation
                             Toast.makeText(context, "Loading ${track.title}...", Toast.LENGTH_SHORT).show()
                             navController.navigate("player/${track.id}")
                         }
@@ -147,7 +146,6 @@ fun LibraryScreen(navController: NavController, userName: String) {
                         modifier = Modifier.padding(12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        // Image Display using Coil
                         AsyncImage(
                             model = track.imageUrl,
                             contentDescription = null,
@@ -168,10 +166,10 @@ fun LibraryScreen(navController: NavController, userName: String) {
 
 @Composable
 fun PlayerScreen(navController: NavController, track: Track) {
-    // Multimedia Playback (MediaPlayer)
     val mediaPlayer = remember { MediaPlayer() }
     var isPlaying by remember { mutableStateOf(false) }
 
+    // Media Player lifecycle management
     DisposableEffect(track.audioUrl) {
         mediaPlayer.apply {
             setDataSource(track.audioUrl)
@@ -211,7 +209,11 @@ fun PlayerScreen(navController: NavController, track: Track) {
             
             Button(
                 onClick = {
-                    if (isPlaying) mediaPlayer.pause() else mediaPlayer.start()
+                    if (isPlaying) {
+                        mediaPlayer.pause()
+                    } else {
+                        mediaPlayer.start()
+                    }
                     isPlaying = !isPlaying
                 },
                 modifier = Modifier.width(150.dp)
