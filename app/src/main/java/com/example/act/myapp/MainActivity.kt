@@ -56,14 +56,18 @@ val trackList = listOf(
 
 @Composable
 fun AppNavigation() {
-    // NavHost and rememberNavController implementation
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "welcome") {
+        // Screen 1: Welcome (User Input & Navigation)
         composable("welcome") { WelcomeScreen(navController) }
+        
+        // Screen 2: Library (Scrolling List / LazyColumn)
         composable("library/{userName}") { backStackEntry ->
             val userName = backStackEntry.arguments?.getString("userName") ?: "Listener"
             LibraryScreen(navController, userName)
         }
+        
+        // Screen 3: Player (Multimedia Playback / MediaPlayer)
         composable("player/{trackId}") { backStackEntry ->
             val trackId = backStackEntry.arguments?.getString("trackId")?.toIntOrNull()
             val track = trackList.find { it.id == trackId }
@@ -76,7 +80,6 @@ fun AppNavigation() {
 
 @Composable
 fun WelcomeScreen(navController: NavController) {
-    // User Input Screen
     var name by remember { mutableStateOf("") }
     
     Scaffold { innerPadding ->
@@ -124,7 +127,6 @@ fun LibraryScreen(navController: NavController, userName: String) {
             }
         }
     ) { innerPadding ->
-        // LazyColumn for scrolling list
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -136,7 +138,7 @@ fun LibraryScreen(navController: NavController, userName: String) {
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 8.dp)
                         .clickable {
-                            // Toast message
+                            // Toast Implementation
                             Toast.makeText(context, "Loading ${track.title}...", Toast.LENGTH_SHORT).show()
                             navController.navigate("player/${track.id}")
                         }
@@ -145,7 +147,7 @@ fun LibraryScreen(navController: NavController, userName: String) {
                         modifier = Modifier.padding(12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        // Image Display (AsyncImage from Coil)
+                        // Image Display using Coil
                         AsyncImage(
                             model = track.imageUrl,
                             contentDescription = null,
@@ -154,7 +156,6 @@ fun LibraryScreen(navController: NavController, userName: String) {
                         )
                         Spacer(modifier = Modifier.width(16.dp))
                         Column {
-                            // Text Composable
                             Text(track.title, style = MaterialTheme.typography.titleMedium)
                             Text(track.artist, style = MaterialTheme.typography.bodySmall)
                         }
@@ -167,11 +168,10 @@ fun LibraryScreen(navController: NavController, userName: String) {
 
 @Composable
 fun PlayerScreen(navController: NavController, track: Track) {
-    // MediaPlayer implementation
+    // Multimedia Playback (MediaPlayer)
     val mediaPlayer = remember { MediaPlayer() }
     var isPlaying by remember { mutableStateOf(false) }
 
-    // Control MediaPlayer lifecycle
     DisposableEffect(track.audioUrl) {
         mediaPlayer.apply {
             setDataSource(track.audioUrl)
@@ -211,11 +211,7 @@ fun PlayerScreen(navController: NavController, track: Track) {
             
             Button(
                 onClick = {
-                    if (isPlaying) {
-                        mediaPlayer.pause()
-                    } else {
-                        mediaPlayer.start()
-                    }
+                    if (isPlaying) mediaPlayer.pause() else mediaPlayer.start()
                     isPlaying = !isPlaying
                 },
                 modifier = Modifier.width(150.dp)
