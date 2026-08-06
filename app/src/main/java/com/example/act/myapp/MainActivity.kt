@@ -45,7 +45,7 @@ data class Track(
     val imageUrl: String
 )
 
-// Sample royalty-free tracks from Bensound
+// Sample tracks from Bensound (Royalty Free)
 val trackList = listOf(
     Track(1, "Acoustic Breeze", "Bensound", "https://www.bensound.com/bensound-music/bensound-acousticbreeze.mp3", "https://www.bensound.com/bensound-img/acousticbreeze.jpg"),
     Track(2, "Going Higher", "Bensound", "https://www.bensound.com/bensound-music/bensound-goinghigher.mp3", "https://www.bensound.com/bensound-img/goinghigher.jpg"),
@@ -106,7 +106,7 @@ fun WelcomeScreen(navController: NavController) {
                 modifier = Modifier.fillMaxWidth(),
                 enabled = name.isNotBlank()
             ) {
-                Text("Enter Library")
+                Text("Start Listening")
             }
         }
     }
@@ -145,7 +145,7 @@ fun LibraryScreen(navController: NavController, userName: String) {
                         modifier = Modifier.padding(12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        // Image Display (AsyncImage)
+                        // Image Display (AsyncImage from Coil)
                         AsyncImage(
                             model = track.imageUrl,
                             contentDescription = null,
